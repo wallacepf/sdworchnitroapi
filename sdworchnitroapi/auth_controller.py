@@ -27,12 +27,11 @@ class Auth:
     def __apiCall(self, uri, headers, **kwargs):
         request_ref = self.apiUrl + "%s/api/v1/%s" % (
             self.ccId, uri)
-        #Alterar os requests para request.post
         if kwargs.get('payload'):
-            response = requests.request(
-                "POST", request_ref, headers=headers, data=json.dumps(kwargs.get('payload')))
+            response = requests.post(
+                request_ref, headers=headers, data=json.dumps(kwargs.get('payload')))
         else:
-            response = requests.request(
-                "POST", request_ref, headers=headers)
+            response = requests.post(
+                request_ref, headers=headers)
 
         return response.json()
