@@ -18,13 +18,13 @@ class Auth:
             "clientSecret": self.clientSecret
         }
 
-        return self.__apiCall('logon', headers, payload=payload)
+        return self.__api_call('logon', headers, payload=payload)
 
     def logoff(self, token):
         headers = {'Content-type': 'application/json', 'Authorization': token}
-        return self.__apiCall('logoff', headers)
+        return self.__api_call('logoff', headers)
 
-    def __apiCall(self, uri, headers, **kwargs):
+    def __api_call(self, uri, headers, **kwargs):
         request_ref = self.apiUrl + "%s/api/v1/%s" % (
             self.ccId, uri)
         if kwargs.get('payload'):

@@ -2,23 +2,23 @@ import requests
 import json
 
 
-class AlertController:
+class VersionController:
 
     def __init__(self, ccId, token):
         self.ccId = ccId
         self.token = token
         self.apiUrl = "https://sdwan-policy.citrixnetworkapi.net/"
 
-    def getHealth(self):
-        return self.__apiCall('health')
+    def get_health(self):
+        return self.__api_call('health')
 
-    def getServiceVersions(self):
-        return self.__apiCall('serviceVersions')
+    def get_service_versions(self):
+        return self.__api_call('serviceVersions')
 
-    def getVersion(self):
-        return self.__apiCall('version')
+    def get_version(self):
+        return self.__api_call('version')
 
-    def __apiCall(self, uri):
+    def __api_call(self, uri):
         request_ref = self.apiUrl + "%s/api/v1/%s" % (self.ccId, uri)
 
         response = requests.get(request_ref)
