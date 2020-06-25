@@ -1,5 +1,4 @@
 from sdworchnitroapi import auth_controller
-from sdworchnitroapi import version_controller
 
 ccId = '9ykds9mj1ll1'
 clientId = '23881f3b-31cd-4fe7-9859-f61499dc9159'
