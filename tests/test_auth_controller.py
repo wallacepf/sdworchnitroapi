@@ -1,8 +1,10 @@
 from sdworchnitroapi import auth_controller
 
-ccId = '9ykds9mj1ll1'
-clientId = '23881f3b-31cd-4fe7-9859-f61499dc9159'
-clientSecret = 'ZberPqH5PM6qPjfDpUZ7Pw=='
+import os
+
+ccId = os.environ['CCID']
+clientId = os.environ['CLIENT_ID']
+clientSecret = os.environ['CLIENT_SECRET']
 
 connection = auth_controller.Auth(ccId, clientId, clientSecret)
 token = connection.logon()['token']
