@@ -3,3 +3,5 @@ test.py
 *.json
 sdworchnitroapi.egg*
 pytest.ini
+.pytest_cache
+.vscode
