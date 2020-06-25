@@ -3,13 +3,9 @@ import json
 
 
 class AlertController:
-    def __init__(self, ccId, customerId, token, **kwargs):
+    def __init__(self, ccId, customerId, token):
         self.ccId = ccId
         self.customerId = customerId
-        self.alertIds = kwargs.get(
-            'alertIds') if kwargs.get('alertIds') else None
-        self.siteId = kwargs.get('siteId') if kwargs.get('siteId') else None
-        self.mspId = kwargs.get('mspId') if kwargs.get('mspId') else None
         self.apiUrl = "https://sdwan-policy.citrixnetworkapi.net/"
         self.headers = {'Content-type': 'application/json',
                         'Authorization': token}
