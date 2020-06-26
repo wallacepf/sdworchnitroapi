@@ -9,12 +9,13 @@ cc_id = os.environ['CCID']
 client_id = os.environ['CLIENT_ID']
 client_secret = os.environ['CLIENT_SECRET']
 customer_id = os.environ['CUSTOMER_ID']
+site_id = os.environ['SITE_ID']
 msp_id = os.environ['MSP_ID']
 
 connection = auth_controller.Auth(cc_id, client_id, client_secret)
 token = connection.logon()['token']
 
-alerts = alert_controller.AlertController(cc_id, customer_id, token, msp_id)
+alerts = alert_controller.AlertController(cc_id, customer_id, token)
 
 key_list = ['createdAt', 'customerId', 'customerName', 'deviceId', 'id', 'message', 'networkId', 'objectName',
             'objectType', 'severity', 'siteId', 'siteName', 'source', 'state', 'time', 'updatedAt', 'userSeverity']
@@ -22,66 +23,73 @@ key_list = ['createdAt', 'customerId', 'customerName', 'deviceId', 'id', 'messag
 
 class GetAlerts:
     def test_get_alerts_customer(self):
-        json_return = json.dumps(alerts.get_alerts(context='customer'))
+        json_return = json.dumps(alerts.get_alerts())
         for each in key_list:
             assert each in json_return['alerts'][0]
         assert 'totalElements' in json_return
         assert len(key_list) == len(
-            alerts.get_alerts(context='customer').keys())
+            alerts.get_alerts().keys())
 
     def test_get_alerts_site(self):
-        json_return = json.dumps(alerts.get_alerts(context='site'))
+        json_return = json.dumps(alerts.get_alerts(site_id=site_id))
         for each in key_list:
             assert each in json_return['alerts'][0]
         assert 'totalElements' in json_return
         assert len(key_list) == len(
-            alerts.get_alerts(context='customer').keys())
+            alerts.get_alerts(site_id=site_id).keys())
 
     def test_get_alerts_msp(self):
-        json_return = json.dumps(alerts.get_alerts(context='msp'))
+        json_return = json.dumps(alerts.get_alerts(msp_id=msp_id))
         for each in key_list:
             assert each in json_return['alerts'][0]
         assert 'totalElements' in json_return
         assert len(key_list) == len(
-            alerts.get_alerts(context='customer').keys())
+            alerts.get_alerts(msp_id=msp_id).keys())
+
 
 class DelAlert:
     @pytest.fixture
-    def get_alert_data_customer(self, context):
+    def get_alert_data(self, context):
         id_return = alerts.get_alerts(context=context)['alerts'][0]['id']
         return id_return
 
     def test_del_alert_customer(self):
+        alert_id = self.get_alert_data('customer')
         assert alerts.del_alert(
-            context='customer', alert_id=self.get_alert_data_customer('customer')) == 'Done'
+            context='customer', alert_id=alert_id) == 'Done'
+        assert alerts.del_alert(
+            context='customer', alert_id=alert_id) == 'No Content'
 
     def test_del_alert_msp(self):
+        alert_id = self.get_alert_data('msp')
         assert alerts.del_alert(
-            context='msp', alert_id=self.get_alert_data_customer('msp')) == 'Done'
+            context='msp', alert_id=alert_id) == 'Done'
+        assert alerts.del_alert(
+            context='msp', alert_id=alert_id) == 'No Content'
+
 
 class DelAllAlerts:
     def test_del_all_alerts_customer(self):
-        pass
+        assert alerts.del_all_alerts() == 'Done'
+        assert alerts.del_all_alerts() == 'No Content'
 
     def test_del_all_alerts_site(self):
-        pass
+        assert alerts.del_all_alerts(site_id=site_id) == 'Done'
+        assert alerts.del_all_alerts(site_id=site_id) == 'No Content'
 
     def test_del_all_alerts_msp(self):
-        pass
+        assert alerts.del_all_alerts(site_id=site_id) == 'Done'
+        assert alerts.del_all_alerts(site_id=site_id) == 'No Content'
 
 
 class GetAlertCount:
     def test_get_alert_count_customer(self):
-        pass
+        assert alerts.get_alert_count()['alertsCount'][0]['count'] >= 0
 
     def test_get_alert_count_site(self):
-        pass
+        assert alerts.get_alert_count(site_id=site_id)[
+            'alertsCount'][0]['count'] >= 0
 
     def test_get_alert_count_msp(self):
-        pass
-
-
-# def test_del_single_alert_contextual():
-#     assert alerts.del_all_alerts(
-#         context='customer', alert_id='') == 'Done'
-#     assert alerts.del_all_alerts(context='msp', alert_id='') == 'Done'
+        assert alerts.get_alert_count(msp_id=msp_id)[
+            'alertsCount'][0]['count'] >= 0
