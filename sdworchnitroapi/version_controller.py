@@ -4,10 +4,10 @@ import json
 
 class VersionController:
 
-    def __init__(self, ccId, token):
-        self.ccId = ccId
+    def __init__(self, cc_id, token):
+        self.cc_id = cc_id
         self.token = token
-        self.apiUrl = "https://sdwan-policy.citrixnetworkapi.net/"
+        self.api_url = "https://sdwan-policy.citrixnetworkapi.net/"
 
     def get_health(self):
         return self.__api_call('health')
@@ -19,7 +19,7 @@ class VersionController:
         return self.__api_call('version')
 
     def __api_call(self, uri):
-        request_ref = self.apiUrl + "%s/api/v1/%s" % (self.ccId, uri)
+        request_ref = self.api_url + "%s/api/v1/%s" % (self.cc_id, uri)
 
         response = requests.get(request_ref)
         return response.json()

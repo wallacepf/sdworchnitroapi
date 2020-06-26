@@ -4,14 +4,14 @@ from sdworchnitroapi import version_controller
 import json
 import os
 
-ccId = os.environ['CCID']
-clientId = os.environ['CLIENT_ID']
-clientSecret = os.environ['CLIENT_SECRET']
+cc_id = os.environ['CCID']
+client_id = os.environ['CLIENT_ID']
+client_secret = os.environ['CLIENT_SECRET']
 
-connection = auth_controller.Auth(ccId, clientId, clientSecret)
+connection = auth_controller.Auth(cc_id, client_id, client_secret)
 token = connection.logon()['token']
 
-versions = version_controller.VersionController(ccId, token)
+versions = version_controller.VersionController(cc_id, token)
 key_list = ['dnbuTrust', 'statsCollector', 'configCompiler', 'home',
             'diagnostics', 'download',
             'saasGw', 'applmgr', 'location',
@@ -20,10 +20,12 @@ key_list = ['dnbuTrust', 'statsCollector', 'configCompiler', 'home',
 
 
 def test_get_health():
-    json_return = json.dumps(versions.get_health())
+    json_return = versions.get_health()
     for each in key_list:
         assert each in json_return
-    assert len(key_list) == len(versions.get_health().keys())
+    assert len(key_list) == len(versions.get_health())
+
+# Bug fix pending
 
 
 def test_get_service_versions():
@@ -31,4 +33,4 @@ def test_get_service_versions():
 
 
 def test_get_version():
-    pass
+    assert versions.get_version()['version']
