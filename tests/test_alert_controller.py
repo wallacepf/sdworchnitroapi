@@ -22,69 +22,69 @@ key_list = ['createdAt', 'customerId', 'customerName', 'deviceId', 'id', 'messag
             'objectType', 'severity', 'siteId', 'siteName', 'source', 'state', 'time', 'updatedAt', 'userSeverity']
 
 
-class GetAlerts:
+class TestGetAlerts:
     def test_get_alerts_customer(self):
-        json_return = json.dumps(alerts.get_alerts())
+        json_return = alerts.get_alerts(customer_id=customer_id)
         for each in key_list:
             assert each in json_return['alerts'][0]
         assert 'totalElements' in json_return
         assert len(key_list) == len(
-            alerts.get_alerts(customer_id=customer_id).keys())
+            alerts.get_alerts(customer_id=customer_id)['alerts'][0])
 
     def test_get_alerts_site(self):
-        json_return = json.dumps(alerts.get_alerts(site_id=site_id))
+        json_return = alerts.get_alerts(
+            customer_id=customer_id, site_id=site_id)
         for each in key_list:
             assert each in json_return['alerts'][0]
         assert 'totalElements' in json_return
         assert len(key_list) == len(
-            alerts.get_alerts(site_id=site_id).keys())
+            alerts.get_alerts(customer_id=customer_id, site_id=site_id)['alerts'][0])
 
     def test_get_alerts_msp(self):
-        json_return = json.dumps(alerts.get_alerts(msp_id=msp_id))
+        json_return = alerts.get_alerts(msp_id=msp_id)
         for each in key_list:
             assert each in json_return['alerts'][0]
         assert 'totalElements' in json_return
         assert len(key_list) == len(
-            alerts.get_alerts(msp_id=msp_id).keys())
+            alerts.get_alerts(msp_id=msp_id)['alerts'][0])
 
 
-class DelAlert:
+class TestDelAlert:
     @pytest.fixture
-    def get_alert_data(self, **kwargs):
-        id_return = alerts.get_alerts(**kwargs)['alerts'][0]['id']
-        return id_return
+    def get_alert_data(self):
+        return alerts.get_alerts(customer_id=customer_id)[
+            'alerts'][0]['id']
 
-    def test_del_alert_customer(self):
-        alert_id = self.get_alert_data(customer_id=customer_id)
+    def test_del_alert_customer(self, get_alert_data):
+        assert alerts.del_alert(customer_id=customer_id,
+                                alert_id=get_alert_data) == 'Done'
+
+    def test_del_alert_msp(self, get_alert_data):
         assert alerts.del_alert(
-            customer_id=customer_id, alert_id=alert_id) == 'Done'
-
-    def test_del_alert_msp(self):
-        alert_id = self.get_alert_data(msp_id=msp_id)
-        assert alerts.del_alert(
-            msp_id=msp_id, alert_id=alert_id) == 'Done'
+            msp_id=msp_id, alert_id=get_alert_data) == 'Done'
 
 
-class DelAllAlerts:
-    def test_del_all_alerts_customer(self):
-        assert alerts.del_all_alerts() == 'Done'
-
-    def test_del_all_alerts_site(self):
-        assert alerts.del_all_alerts(site_id=site_id) == 'Done'
-
-    def test_del_all_alerts_msp(self):
-        assert alerts.del_all_alerts(site_id=site_id) == 'Done'
-
-
-class GetAlertCount:
+class TestGetAlertCount:
     def test_get_alert_count_customer(self):
         assert alerts.get_alert_count(customer_id=customer_id)[
             'alertsCount'][0]['count'] >= 0
 
     def test_get_alert_count_site(self):
-        assert alerts.get_alert_count(site_id=site_id)[
+        assert alerts.get_alert_count(customer_id=customer_id, site_id=site_id)[
             'alertsCount'][0]['count'] >= 0
 
     def test_get_alert_count_msp(self):
-        assert alerts.get_alert_count(msp_id=msp_id)[
-            'alertsCount'][0]['count'] >= 0
+        assert alerts.get_alert_count(msp_id=msp_id)['alertsCount']
+        assert alerts.get_alert_count(msp_id=msp_id)['totalElements'] >= 0
+
+
+class TestDelAllAlerts:
+    def test_del_all_alerts_customer(self):
+        assert alerts.del_all_alerts(customer_id=customer_id) == 'Done'
+
+    def test_del_all_alerts_site(self):
+        assert alerts.del_all_alerts(
+            customer_id=customer_id, site_id=site_id) == 'Done'
+
+    def test_del_all_alerts_msp(self):
+        assert alerts.del_all_alerts(msp_id=msp_id) == 'Done'

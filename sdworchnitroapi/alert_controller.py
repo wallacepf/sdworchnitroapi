@@ -36,6 +36,7 @@ class AlertController:
             request_ref = self.api_url + \
                 'msp/{}/alerts'.format(kwargs.get('msp_id'))
             response = requests.get(request_ref, headers=self.headers)
+        
         return response.json()
 
     def __api_call_del(self, **kwargs):
