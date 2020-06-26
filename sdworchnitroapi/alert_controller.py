@@ -3,74 +3,85 @@ import json
 
 
 class AlertController:
-    def __init__(self, ccId, customerId, token):
-        self.ccId = ccId
-        self.customerId = customerId
-        self.apiUrl = "https://sdwan-policy.citrixnetworkapi.net/"
+    def __init__(self, cc_id, token):
+        self.cc_id = cc_id
+        self.api_url = "https://sdwan-policy.citrixnetworkapi.net/{}/api/v1/".format(
+            cc_id)
         self.headers = {'Content-type': 'application/json',
                         'Authorization': token}
 
-    def del_single_alerts(self, context="", alert_id=""):
-        return self.__api_call_del(context=context, alert_id=alert_id)
+    def get_alerts(self, **kwargs):
+        return self.__api_call_get(**kwargs)
 
-    def get_alerts(self, context="", **kwargs):
-        return self.__api_call_get(context=context, **kwargs)
+    def del_alert(self, **kwargs):
+        return self.__api_call_del(**kwargs)
 
-    def del_all_alerts_customer(self):
-        pass
+    def del_all_alerts(self, **kwargs):
+        return self.__api_call_del_all(**kwargs)
 
-    def get_alerts_count_customer(self):
-        pass
+    def get_alert_count(self, **kwargs):
+        return self.__api_call_get_alert_count(**kwargs)
 
-    def get_alerts_site(self):
-        pass
-
-    def del_all_alerts_site(self):
-        pass
-
-    def get_alerts_count_site(self):
-        pass
-
-    def get_alerts_msp(self):
-        pass
-
-    def del_all_alerts_msp(self):
-        pass
-
-    def get_alerts_count_msp(self):
-        pass
-
-    def __api_call_get(self, context="", **kwargs):
-        if context == "customer" or context == "":
-            # Analyze the proper way to work with Group
-            if kwargs.get('group'):
-                request_ref = self.apiUrl + \
-                    "%s/api/v1/customer/%s/alerts?group=%s" % (self.ccId,
-                                                               self.customerId, kwargs.get('group'))
-            else:
-                request_ref = self.apiUrl + \
-                    "%s/api/v1/customer/%s/alerts" % (self.ccId,
-                                                      self.customerId)
-                response = requests.get(request_ref, headers=self.headers)
-        elif context == "site":
-            request_ref = self.apiUrl + \
-                "%s/api/v1/customer/%s/site/%s/alerts" % (self.ccId,
-                                                          self.customerId, kwargs.get('site_id'))
+    def __api_call_get(self, **kwargs):
+        if kwargs.get('customer_id'):
+            request_ref = self.api_url + \
+                'customer/{}/alerts'.format(kwargs.get('customer_id'))
             response = requests.get(request_ref, headers=self.headers)
-        elif context == "msp":
-            pass
-
+        elif kwargs.get('customer_id') and kwargs.get('site_id'):
+            request_ref = self.api_url + \
+                'customer/{}/site/{}/alerts'.format(
+                    kwargs.get('customer_id'), kwargs.get('site_id'))
+            response = requests.get(request_ref, headers=self.headers)
+        elif kwargs.get('msp_id'):
+            request_ref = self.api_url + \
+                'msp/{}/alerts'.format(kwargs.get('msp_id'))
+            response = requests.get(request_ref, headers=self.headers)
         return response.json()
 
-    def __api_call_del(self, context="", **kwargs):
-        if context == "customer":
-            request_ref = self.apiUrl + \
-                "%s/api/v1/customer/%s/alert/%s" % (
-                    self.ccId, self.customerId, kwargs.get('alert_id'))
+    def __api_call_del(self, **kwargs):
+        if kwargs.get('customer_id') and kwargs.get('alert_id'):
+            request_ref = self.api_url + \
+                'customer/{}/alert/{}'.format(kwargs.get(
+                    'customer_id'), kwargs.get('alert_id'))
             response = requests.delete(request_ref, headers=self.headers)
-        elif context == "site":
-            pass
-        elif context == "msp":
-            pass
+        elif kwargs.get('msp_id') and kwargs.get('alert_id'):
+            request_ref = self.api_url + \
+                'msp/{}/alert/{}'.format(kwargs.get('msp_id'),
+                                         kwargs.get('alert_id'))
+            response = requests.delete(request_ref, headers=self.headers)
 
-        return response if response.status_code == 204 else False
+        return 'Done' if response.status_code == 204 else False
+
+    def __api_call_del_all(self, **kwargs):
+        if kwargs.get('customer_id'):
+            requests_ref = self.api_url + \
+                'customer/{}/alerts'.format(kwargs.get('customer_id'))
+            response = requests.delete(requests_ref, headers=self.headers)
+        elif kwargs.get('customer_id') and kwargs.get('site_id'):
+            requests_ref = self.api_url + \
+                'customer/{}/site/{}/alerts'.format(
+                    kwargs.get('customer_id'), kwargs.get('site_id'))
+            response = requests.delete(requests_ref, headers=self.headers)
+        elif kwargs.get('msp_id'):
+            requests_ref = self.api_url + \
+                'msp/{}/alerts'.format(kwargs.get('msp_id'))
+            response = requests.delete(requests_ref, headers=self.headers)
+
+        return 'Done' if response.status_code == 204 else False
+
+    def __api_call_get_alert_count(self, **kwargs):
+        if kwargs.get('customer_id'):
+            requests_ref = self.api_url + \
+                'customer/{}/alerts/count'.format(kwargs.get('customer_id'))
+            response = requests.get(requests_ref, headers=self.headers)
+        elif kwargs.get('customer_id') and kwargs.get('site_id'):
+            requests_ref = self.api_url + \
+                'customer/{}/site/{}/alerts/count'.format(
+                    kwargs.get('customer_id'), kwargs.get('site_id'))
+            response = requests.get(requests_ref, headers=self.headers)
+        elif kwargs.get('msp_id'):
+            requests_ref = self.api_url + \
+                'msp/{}/alerts/count'.format(kwargs.get('msp_id'))
+            response = requests.get(requests_ref, headers=self.headers)
+
+        return response.json()
