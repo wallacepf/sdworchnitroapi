@@ -7,7 +7,7 @@ This lib is focused on simplify the API interactions with Citrix SD-WAN Cloud Or
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install sdworchnitroapi.
 
 ```bash
-pip -e install sdworchnitroapi
+pip install -e .
 ```
 
 ## Usage

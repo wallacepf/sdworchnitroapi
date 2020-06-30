@@ -42,18 +42,18 @@ def site_scope():
 
 
 @pytest.fixture
+def get_site_infos():
+    site_id = site_mgmt.get_sites()[0]['activeDevice']['id']
+    updated_at = site_mgmt.get_sites()[0]['activeDevice']['updatedAt']
+    return site_id, updated_at
+
+
+@pytest.fixture
 def modify_site_address():
     payload = {
         "address": "Python Lib Test, 123"
     }
     return payload
-
-
-@pytest.fixture
-def get_site_infos():
-    site_id = site_mgmt.get_sites()[0]['activeDevice']['id']
-    updated_at = site_mgmt.get_sites()[0]['activeDevice']['updatedAt']
-    return site_id, updated_at
 
 
 def test_create_site(site_scope):
@@ -72,10 +72,19 @@ def test_get_site(get_site_infos):
         'activeDevice']['id'] == get_site_infos[0]
 
 
-def test_del_site(get_site_infos):
-    pass
-
-
 def test_modify_site(modify_site_address, get_site_infos):
     assert site_mgmt.modify_site(site_id=get_site_infos[0], site_config=modify_site_address)[
         'activeDevice']['createdAt'] != get_site_infos[1]
+
+
+def test_del_site(get_site_infos):
+    assert site_mgmt.del_site(site_id=get_site_infos[0]) == 'Done'
+
+def test_get_site_stats(get_site_infos):
+    assert site_mgmt.get_site_stats(site_id=get_site_infos[0])['apps']
+    assert site_mgmt.get_site_stats(site_id=get_site_infos[0])['appCategories']
+    assert site_mgmt.get_site_stats(site_id=get_site_infos[0])['sites']
+    assert site_mgmt.get_site_stats(site_id=get_site_infos[0])['sitesUtilization']
+
+def test_get_site_with_features(get_site_infos):
+    assert site_mgmt.get_site_with_features(site_id=get_site_infos[0])['createdAt']
