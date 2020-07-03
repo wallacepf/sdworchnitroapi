@@ -15,6 +15,9 @@ class SiteController():
     def get_site(self, site_id: str):
         return self.__api_get_site(site_id)
 
+    def get_sites(self):
+        return self.__api_get_site(site_id='')
+
     def __api_get_create(self, site_config: dict):
         request_ref = self.api_url + "siteapi"
         response = requests.post(
@@ -22,6 +25,10 @@ class SiteController():
         return response.json()
 
     def __api_get_site(self, site_id: str):
-        request_ref = self.api_url + 'site/{}'.format(site_id)
-        response = requests.get(request_ref, headers=self.headers)
+        if site_id != '':
+            request_ref = self.api_url + 'site/{}'.format(site_id)
+            response = requests.get(request_ref, headers=self.headers)
+        else:
+            request_ref = self.api_url + 'sites'
+            response = requests.get(request_ref, headers=self.headers)
         return response.json()
