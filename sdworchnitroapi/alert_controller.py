@@ -20,7 +20,7 @@ class AlertController:
         return self.__api_call_del_all(**kwargs)
 
     def get_alert_count(self, **kwargs):
-        return self.__api_call_get_alert_count(**kwargs)
+        return self.__api_call_get_count(**kwargs)
 
     def __api_call_get(self, **kwargs):
         if kwargs.get('customer_id'):
@@ -70,7 +70,7 @@ class AlertController:
 
         return 'Done' if response.status_code == 204 else False
 
-    def __api_call_get_alert_count(self, **kwargs):
+    def __api_call_get_count(self, **kwargs):
         if kwargs.get('customer_id'):
             requests_ref = self.api_url + \
                 'customer/{}/alerts/count'.format(kwargs.get('customer_id'))

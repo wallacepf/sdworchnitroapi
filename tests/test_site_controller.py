@@ -13,7 +13,7 @@ customer_id = os.environ('CUSTOMER_ID')
 connection = ac.Auth(cc_id, client_id, client_secret)
 token = connection.logon()['token']
 
-site_mgmt = sc.SiteController(cc_id, customer_id)
+site_mgmt = sc.SiteController(cc_id, customer_id, token)
 
 
 @pytest.fixture
@@ -80,11 +80,15 @@ def test_modify_site(modify_site_address, get_site_infos):
 def test_del_site(get_site_infos):
     assert site_mgmt.del_site(site_id=get_site_infos[0]) == 'Done'
 
+
 def test_get_site_stats(get_site_infos):
     assert site_mgmt.get_site_stats(site_id=get_site_infos[0])['apps']
     assert site_mgmt.get_site_stats(site_id=get_site_infos[0])['appCategories']
     assert site_mgmt.get_site_stats(site_id=get_site_infos[0])['sites']
-    assert site_mgmt.get_site_stats(site_id=get_site_infos[0])['sitesUtilization']
+    assert site_mgmt.get_site_stats(site_id=get_site_infos[0])[
+        'sitesUtilization']
+
 
 def test_get_site_with_features(get_site_infos):
-    assert site_mgmt.get_site_with_features(site_id=get_site_infos[0])['createdAt']
+    assert site_mgmt.get_site_with_features(
+        site_id=get_site_infos[0])['createdAt']
