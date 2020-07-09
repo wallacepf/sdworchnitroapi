@@ -5,10 +5,10 @@ import os
 import json
 import pytest
 
-cc_id = os.environ('CCID')
-client_id = os.environ('CLIENT_ID')
-client_secret = os.environ('CLIENT_SECRET')
-customer_id = os.environ('CUSTOMER_ID')
+cc_id = os.environ['CCID']
+client_id = os.environ['CLIENT_ID']
+client_secret = os.environ['CLIENT_SECRET']
+customer_id = os.environ['CUSTOMER_ID']
 
 connection = ac.Auth(cc_id, client_id, client_secret)
 token = connection.logon()['token']
@@ -24,7 +24,7 @@ def site_scope():
         "bandwidthTier": 100,
         "edition": "SE",
         "model": "cbvpx",
-        "name": "MCN01-A",
+        "name": "MCN01_A",
         "subModel": "BASE"
     }
 
@@ -33,7 +33,7 @@ def site_scope():
         "applianceMode": "client",
         "bandwidthTier": 50,
         "edition": "SE",
-        "model": "210",
+        "model": "cb210",
         "name": "SITE01",
         "subModel": "BASE"
     }
@@ -43,8 +43,8 @@ def site_scope():
 
 @pytest.fixture
 def get_site_infos():
-    site_id = site_mgmt.get_sites()[0]['activeDevice']['id']
-    updated_at = site_mgmt.get_sites()[0]['activeDevice']['updatedAt']
+    site_id = site_mgmt.get_sites()[0]['id']
+    updated_at = site_mgmt.get_sites()[0]['updatedAt']
     return site_id, updated_at
 
 
@@ -64,31 +64,37 @@ def test_create_site(site_scope):
 
 
 def test_get_sites():
-    assert site_mgmt.get_sites()[0]['activeDevice']['createdAt']
+    # assert site_mgmt.get_sites()[0]['name'] == 'SITE01'
+    # assert site_mgmt.get_sites()[1]['name'] == 'MCN01_A'
+    site_names = ['SITE01', 'MCN01_A']
+    for each in site_mgmt.get_sites():
+        assert each['name'] in site_names
 
 
 def test_get_site(get_site_infos):
     assert site_mgmt.get_site(site_id=get_site_infos[0])[
-        'activeDevice']['id'] == get_site_infos[0]
+        'id'] == get_site_infos[0]
 
 
 def test_modify_site(modify_site_address, get_site_infos):
     assert site_mgmt.modify_site(site_id=get_site_infos[0], site_config=modify_site_address)[
-        'activeDevice']['createdAt'] != get_site_infos[1]
-
-
-def test_del_site(get_site_infos):
-    assert site_mgmt.del_site(site_id=get_site_infos[0]) == 'Done'
+        'createdAt'] != get_site_infos[1]
 
 
 def test_get_site_stats(get_site_infos):
-    assert site_mgmt.get_site_stats(site_id=get_site_infos[0])['apps']
-    assert site_mgmt.get_site_stats(site_id=get_site_infos[0])['appCategories']
-    assert site_mgmt.get_site_stats(site_id=get_site_infos[0])['sites']
-    assert site_mgmt.get_site_stats(site_id=get_site_infos[0])[
-        'sitesUtilization']
+    assert 'apps' in site_mgmt.get_site_stats(
+        site_id=get_site_infos[0])
+    assert 'appCategories' in site_mgmt.get_site_stats(
+        site_id=get_site_infos[0])
+    assert 'sites' in site_mgmt.get_site_stats(site_id=get_site_infos[0])
+    assert 'sitesUtilization' in site_mgmt.get_site_stats(
+        site_id=get_site_infos[0])
 
 
 def test_get_site_with_features(get_site_infos):
-    assert site_mgmt.get_site_with_features(
-        site_id=get_site_infos[0])['createdAt']
+    assert 'createdAt' in site_mgmt.get_site_with_features()[0]
+
+
+# CHANGE THIS TEST TO DELETE ALL CREATED SITES
+def test_del_site(get_site_infos):
+    assert site_mgmt.del_site(site_id=get_site_infos[0]) == 'Done'
